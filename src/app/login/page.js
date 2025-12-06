@@ -39,18 +39,20 @@ function LoginContent() {
     e.preventDefault();
     try {
       // Get the backend URL dynamically
-      const getBackendUrl = () => {
-        if (typeof window !== 'undefined') {
-          // If we're on a mobile device accessing via IP, use the same IP for backend
-          const currentHost = window.location.hostname;
-          if (currentHost !== 'localhost' && currentHost !== '127.0.0.1') {
-            return `https://${currentHost}`;
-          }
-        }
-        return process.env.NEXT_PUBLIC_API_URL || 'https://localhost:3001';
-      };
+      // const getBackendUrl = () => {
+      //   if (typeof window !== 'undefined') {
+      //     // If we're on a mobile device accessing via IP, use the same IP for backend
+      //     const currentHost = window.location.hostname;
+      //     if (currentHost !== 'localhost' && currentHost !== '127.0.0.1') {
+      //       return `https://${currentHost}`;
+      //     }
+      //   }
+      //   return process.env.NEXT_PUBLIC_API_URL || 'https://localhost:3001';
+      // };
 
-      const backendUrl = getBackendUrl();
+      // const backendUrl = getBackendUrl();
+
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL;
       
       const res = await fetch(`${backendUrl}/api/v1/users/login`, {
         method: 'POST',
