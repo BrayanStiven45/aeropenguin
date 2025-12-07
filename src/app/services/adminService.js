@@ -293,13 +293,17 @@ class AdminService {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Error al eliminar el vuelo' }));
+        const errorData = await response.json().catch(() => ({ 
+          error: `Error ${response.status}: ${response.statusText}` 
+        }));
+        
+        console.error('Error response from backend:', errorData);
         
         let errorMessage = 'Error al eliminar el vuelo';
         
         // Manejar el error específico de compras asociadas
         if (errorData.code === 'FLIGHT_HAS_PURCHASES') {
-          errorMessage = errorData.error;
+          errorMessage = errorData.error || 'No se puede eliminar el vuelo porque tiene compras asociadas';
         } else if (errorData.details) {
           errorMessage = errorData.details;
         } else if (errorData.error) {
@@ -309,6 +313,9 @@ class AdminService {
         } else if (errorData.message) {
           errorMessage = errorData.message;
         }
+        
+        // Agregar el código de estado para más contexto
+        errorMessage = `${errorMessage} (${response.status})`;
         
         throw new Error(errorMessage);
       }
