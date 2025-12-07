@@ -298,6 +298,7 @@ class AdminService {
         }));
         
         console.error('Error response from backend:', errorData);
+        console.error('Full error details:', JSON.stringify(errorData, null, 2));
         
         let errorMessage = 'Error al eliminar el vuelo';
         
@@ -309,6 +310,8 @@ class AdminService {
         } else if (errorData.error) {
           if (typeof errorData.error === 'string') {
             errorMessage = errorData.error;
+          } else if (typeof errorData.error === 'object') {
+            errorMessage = JSON.stringify(errorData.error);
           }
         } else if (errorData.message) {
           errorMessage = errorData.message;
