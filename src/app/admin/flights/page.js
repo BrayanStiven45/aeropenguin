@@ -7,6 +7,7 @@ import CustomPopup from '../../components/CustomPopup';
 import usePopup from '../../hooks/usePopup';
 import LoadingScreen from '../../components/LoadingScreen';
 import API_URL from '@/utils/api';
+import adminService from '../../services/adminService';
 
 export default function AdminFlights() {
   const router = useRouter();
@@ -190,39 +191,21 @@ export default function AdminFlights() {
 
   const handleDelete = async (flightId) => {
     showConfirm(
-      '¿Estás seguro de que quieres cancelar este vuelo? Esta acción no se puede deshacer.',
+      '¿Estás seguro de que quieres eliminar este vuelo? Esta acción no se puede deshacer.',
       async () => {
         try {
-          const response = await fetch(`${API_URL}/api/v1/flights/${flightId}`, {
-            method: 'DELETE',
-            credentials: 'include'
-          });
-
-          if (response.ok) {
-            const result = await response.json();
-            showSuccess(result.message || 'Vuelo eliminado exitosamente');
-            
-            setFlights(flights.filter(f => f.ccv !== flightId));
-          } else {
-            const error = await response.json();
-            console.error('Error canceling flight:', error);
-
-            let errorMessage = 'Error al cancelar el vuelo';
-            if (error.details) {
-              errorMessage = error.details;
-            } else if (error.error) {
-              errorMessage = error.error;
-            }
-            
-            showError(errorMessage);
-          }
+          const result = await adminService.deleteFlight(flightId);
+          showSuccess(result.message || 'Vuelo eliminado exitosamente');
+          
+          // Actualizar la lista de vuelos
+          setFlights(flights.filter(f => f.ccv !== flightId));
         } catch (error) {
-          console.error('Network error:', error);
-          showError('Error de conexión al intentar cancelar el vuelo: ' + error.message);
+          console.error('Error deleting flight:', error);
+          showError(error.message || 'Error al eliminar el vuelo');
         }
       },
-      '¿Cancelar vuelo?',
-      'Sí, cancelar',
+      '¿Eliminar vuelo?',
+      'Sí, eliminar',
       'No'
     );
   };

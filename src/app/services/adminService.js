@@ -288,6 +288,47 @@ class AdminService {
       throw new Error('Error al obtener los datos del administrador');
     }
   }
+
+ 
+  // Delete a flight
+  async deleteFlight(flightId) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/flights/${flightId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Error al eliminar el vuelo' }));
+        
+        let errorMessage = 'Error al eliminar el vuelo';
+        
+        // Manejar el error específico de compras asociadas
+        if (errorData.code === 'FLIGHT_HAS_PURCHASES') {
+          errorMessage = errorData.error;
+        } else if (errorData.details) {
+          errorMessage = errorData.details;
+        } else if (errorData.error) {
+          if (typeof errorData.error === 'string') {
+            errorMessage = errorData.error;
+          }
+        } else if (errorData.message) {
+          errorMessage = errorData.message;
+        }
+        
+        throw new Error(errorMessage);
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Error deleting flight:', error);
+      throw error;
+    }
+  }
 }
 
 const adminService = new AdminService();
