@@ -1,16 +1,7 @@
 // API service for admin management
-const getBackendUrl = () => {
-  if (typeof window !== 'undefined') {
-    // If we're on a mobile device accessing via IP, use the same IP for backend
-    const currentHost = window.location.hostname;
-    if (currentHost !== 'localhost' && currentHost !== '127.0.0.1') {
-      return `http://${currentHost}:3001`;
-    }
-  }
-  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-};
+import API_URL_BASE from '../../utils/api';
 
-const API_BASE_URL = `${getBackendUrl()}/api/v1`;
+const API_BASE_URL = `${API_URL_BASE}/api/v1`;
 
 class AdminService {
   // Función auxiliar para validar contraseña
